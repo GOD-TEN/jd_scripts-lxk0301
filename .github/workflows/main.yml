@@ -22,8 +22,14 @@ jobs:
       - name: Install Serverless
         run: npm install -g serverless@3
 
+      # 关键步骤：单独安装 components
+      - name: Install Serverless Components
+        run: npm install -g @serverless/components
+
+      # 关键步骤：改用 components deploy 命令，并设置环境变量
       - name: Deploy to Tencent SCF
-        run: serverless deploy
+        run: components deploy
         env:
           TENCENT_SECRET_ID: ${{ secrets.TENCENT_SECRET_ID }}
           TENCENT_SECRET_KEY: ${{ secrets.TENCENT_SECRET_KEY }}
+          SLS_GEO_LOCATION: no-cn # 解决国内网络/地域识别问题
