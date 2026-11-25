@@ -3,9 +3,7 @@ name: Deploy to Tencent SCF
 on:
   workflow_dispatch: # 允许你在网页上手动点击运行
   push:
-    branches: [ "master" ] # 当代码推送到 master 分支时触发
-  schedule:
-    - cron: '0 0 * * *' # 每天 UTC 0点（北京时间早上8点）自动运行一次（可选）
+    branches: [ "master" ] # 只有当代码更新时才触发部署
 
 jobs:
   deploy:
@@ -19,17 +17,9 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install Serverless
-        run: npm install -g serverless@3
-
-      # 关键步骤：单独安装 components
-      - name: Install Serverless Components
-        run: npm install -g @serverless/components
-
-      # 关键步骤：改用 components deploy 命令，并设置环境变量
       - name: Deploy to Tencent SCF
-        run: components deploy
+        uses: woodyyan/tencent-serverless-action@main
         env:
+          SERVERLESS_PLATFORM_VENDOR: tencent
           TENCENT_SECRET_ID: ${{ secrets.TENCENT_SECRET_ID }}
           TENCENT_SECRET_KEY: ${{ secrets.TENCENT_SECRET_KEY }}
-          SLS_GEO_LOCATION: no-cn # 解决国内网络/地域识别问题
