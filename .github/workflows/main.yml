@@ -1,0 +1,29 @@
+name: Deploy to Tencent SCF
+
+on:
+  workflow_dispatch: # 允许你在网页上手动点击运行
+  push:
+    branches: [ "master" ] # 当代码推送到 master 分支时触发
+  schedule:
+    - cron: '0 0 * * *' # 每天 UTC 0点（北京时间早上8点）自动运行一次（可选）
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '14'
+
+      - name: Install Serverless
+        run: npm install -g serverless
+
+      - name: Deploy to Tencent SCF
+        run: serverless deploy
+        env:
+          TENCENT_SECRET_ID: ${{ secrets.TENCENT_SECRET_ID }}
+          TENCENT_SECRET_KEY: ${{ secrets.TENCENT_SECRET_KEY }}
